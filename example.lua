@@ -45,9 +45,18 @@ user:save()
 print("New user name is " .. user.username)
 -- New user name is John Smith
 
+-- Update fields with where statement
+User.get:where({time_create__null = true})
+        :update({time_create = os.time()})
+
 ----------------------------- DELETE DATA --------------------------------
 
 user:delete()
+
+user = User({username = "SomebodyNew", password = "NotSecret"})
+user:save()
+
+User.get:where({username = "SomebodyNew"}):delete()
 
 ----------------------------- ADD TEST DATA --------------------------------
 

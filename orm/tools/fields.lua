@@ -52,12 +52,13 @@ field.BooleandField = Field:register({
 field.DateTimeField = Field:register({
     __type__ = "integer",
     validator = function (value)
-        if value.isdst ~= nil then
+        if (Type.is.table(value) and value.isdst ~= nil)
+        or Type.is.int(value) then
             return true
         end
     end,
     as = function (value)
-        return os.time(value)
+        return Type.is.int(value) and value or os.time(value) 
     end,
     to_type = function (value)
         return os.date("*t", Type.to.number(value))

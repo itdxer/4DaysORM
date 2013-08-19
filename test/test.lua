@@ -181,4 +181,30 @@ TestORMSelect = {}
         assertEquals(users[1].news_all:count(), 3)
     end
 
+    function TestORMSelect:test14_update_many()
+        local users_query = User.get:where({age__gt = 40})
+        local users_before = users_query:all()
+
+        users_query:update({age = 41})
+
+        local users_after = users_query:all()
+
+        for iter, user in pairs(users_after) do
+            assertEquals(user.username, users_before[iter].username)
+            assertEquals(user.age, 41)
+        end
+    end
+
+    function TestORMSelect:test15_delete_many()
+        local users_query = User.get:where({age__lt = 40})
+        local users_before = users_query:all()
+
+        users_query:delete()
+
+        local users_after = users_query:all()
+
+        assertEquals(users_before:count(), 3)
+        assertEquals(users_after:count(), 0)
+    end
+
 LuaUnit:run()

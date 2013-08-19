@@ -511,6 +511,63 @@ local Select = function(own_table)
         end,
 
         --------------------------------------------------------
+        --                 Update data methods                --
+        --------------------------------------------------------
+
+        update = function (self, data)
+            if Type.is.table(data) then
+                local _update = "UPDATE `" .. self.own_table.__tablename__ .. "`"
+                local _set = ""
+                local coltype
+
+                for colname, new_value in pairs(data) do
+                    coltype = self.own_table:get_column(colname)
+
+                    if coltype and coltype.field.validator(new_value) then
+                        _set = _set .. " `" .. colname .. "` = " ..
+                              coltype.field.as(new_value)
+                    else
+                        BACKTRACE(WARNING, "Can't update value for column `" ..
+                                            Type.to.str(colname) .. "`")
+                    end
+                end
+
+                -- Build WHERE
+                if next(self._rules.where) then
+                    _where = self:_condition(self._rules.where, "\nWHERE")
+                else
+                    BACKTRACE(INFO, "No 'where' statement. All data update!")
+                end
+
+                if _set ~= "" then
+                    _update = _update .. " SET " .. _set .. " " .. _where
+                    db:execute(_update)
+                else
+                    BACKTRACE(WARNING, "No table columns for update")
+                end
+            else
+                BACKTRACE(WARNING, "No data for global update")
+            end
+        end,
+
+        --------------------------------------------------------
+        --                 Delete data methods                --
+        --------------------------------------------------------
+
+        delete = function (self)
+            local _delete = "DELETE FROM `" .. self.own_table.__tablename__ .. "` "
+
+            -- Build WHERE
+            if next(self._rules.where) then
+                _delete = _delete .. self:_condition(self._rules.where, "\nWHERE")
+            else
+                BACKTRACE(WARNING, "Try delete all values")
+            end
+
+            db:execute(_delete)
+        end,
+
+        --------------------------------------------------------
         --              Get select data methods               --
         --------------------------------------------------------
 
@@ -532,4 +589,4 @@ local Select = function(own_table)
     }
 end
 
-return Select
+return Select 
