@@ -107,9 +107,9 @@ local Select = function(own_table)
                     end
 
                     if rule == IN then
-                        result = " IN (" .. table.join(_in) .. ")"
+                        result = " IN (" .. table.concat(_in, ",") .. ")"
                     elseif rule == NOT_IN then
-                        result = " NOT IN (" .. table.join(_in) .. ")"
+                        result = " NOT IN (" .. table.concat(_in, ",") .. ")"
                     end
                 end
 
@@ -263,7 +263,7 @@ local Select = function(own_table)
                 table.insert(include, colname .. " AS " .. colname_as)
             end
 
-            include = table.join(include)
+            include = table.concat(include, ",")
 
             return include
         end,
@@ -316,7 +316,7 @@ local Select = function(own_table)
                     table.insert(aggregators, value[1] .. " AS " .. as)
                 end
 
-                _select = _select .. ", " .. table.join(aggregators)
+                _select = _select .. ", " .. table.concat(aggregators, ",")
             end
             ------------------- End Include Columns To Select ----------------
 
@@ -335,7 +335,7 @@ local Select = function(own_table)
             -- Build GROUP BY
             if table.getn(self._rules.group) > 0 then
                 rule = self:_update_col_names(self._rules.group)
-                rule = table.join(rule)
+                rule = table.concat(rule, ",")
                 _select = _select .. " \nGROUP BY " .. rule
             end
 

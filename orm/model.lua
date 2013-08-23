@@ -10,10 +10,6 @@ local Table = require('orm.class.table')
 ------------------------------------------------------------------------------
 --                                Constants                                 --
 ------------------------------------------------------------------------------
--- Global
-ID = "id"
-AGGREGATOR = "aggregator"
-QUERY_LIST = "query_list"
 
 -- databases types
 SQLITE = "sqlite3"
@@ -26,10 +22,11 @@ POSTGRESQL = "postgresql"
 ------------------------------------------------------------------------------
 
 if not DB then
-    BACKTRACE(INFO, "Cna't find global database settings variable 'DB'")
+    BACKTRACE(INFO, "Can't find global database settings variable 'DB'")
     DB = {}
 end
 
+-- Set all user configs and default for database
 DB = {
     -- ORM settings
     new = (DB.new == true),
@@ -47,34 +44,6 @@ DB = {
     password = DB.password or nil
 }
 
-local sql, _connect
-
--- Get database by settings
-if DB.type == SQLITE then
-    require("luasql.sqlite3")
-    sql = luasql.sqlite3()
-    _connect = sql:connect(DB.name)
-
-elseif DB.type == MYSQL then
-    require("luasql.mysql")
-    sql = luasql.mysql()
-    print(DB.name, DB.username, DB.password, DB.host, DB.port)
-    _connect = sql:connect(DB.name, DB.username, DB.password, DB.host, DB.port)
-
-elseif DB.type == POSTGRESQL then
-    require("luasql.postgres")
-    sql = luasql.postgres()
-    print(DB.name, DB.username, DB.password, DB.host, DB.port)
-    _connect = sql:connect(DB.name, DB.username, DB.password, DB.host, DB.port)
-
-else
-    BACKTRACE(ERROR, "Database type not suported '" .. tostring(DB.type) .. "'")
-end
-
-if not _connect then
-    BACKTRACE(ERROR, "Connect problem!")
-end
-
 -- if DB.new then
 --     BACKTRACE(INFO, "Remove old database")
 
@@ -85,70 +54,6 @@ end
 --     end
 -- end
 
-------------------------------------------------------------------------------
---                               Database                                   --
-------------------------------------------------------------------------------
-
--- Database settings
-db = {
-    -- Satabase connect instance
-    connect = _connect,
-
-    -- Execute SQL query
-    execute = function (self, query)
-        BACKTRACE(DEBUG, query)
-
-        local result = self.connect:execute(query)
-
-        if result then
-            return result
-        else
-            BACKTRACE(WARNING, "Wrong SQL query")
-        end
-    end,
-
-    -- Return insert query id
-    insert = function (self, query)
-        local _cursor = self:execute(query)
-        return 1
-    end,
-
-    -- get parced data
-    rows = function (self, query, own_table)
-        local _cursor = self:execute(query)
-        local data = {}
-        local current_row = {}
-        local current_table
-        local row
-
-        if _cursor then
-            row = _cursor:fetch({}, "a")
-
-            while row do
-                for colname, value in pairs(row) do
-                    current_table, colname = string.divided_into(colname, "_")
-
-                    if current_table == own_table.__tablename__ then
-                        current_row[colname] = value
-                    else
-                        if not current_row[current_table] then
-                            current_row[current_table] = {}
-                        end
-
-                        current_row[current_table][colname] = value
-                    end
-                end
-
-                table.insert(data, current_row)
-
-                current_row = {}
-                row = _cursor:fetch({}, "a")
-            end
-
-        end
-
-        return data
-    end
-}
+_G.db = require('orm.modules.luasql')
 
 return Table

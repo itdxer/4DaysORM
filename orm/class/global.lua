@@ -9,6 +9,15 @@ WARNING = 'w'
 INFO = 'i'
 DEBUG = 'd'
 
+ID = "id"
+AGGREGATOR = "aggregator"
+QUERY_LIST = "query_list"
+
+TRANSACTION = {
+    MODE = false,
+    _STACK = {}
+}
+
 All_Tables = {}
 
 ------------------------------------------------------------------------------
@@ -82,6 +91,7 @@ function table.has_value(array, value)
     end
 end
 
+-- Need for correcty call metamethod for concationation
 function table.join(array, separator)
     local result = ""
     local counter = 0

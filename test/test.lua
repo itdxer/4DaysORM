@@ -29,14 +29,14 @@ local News = Table({
 
 require('test.luaunit')
 
-TestORM = {
+Test1ORM = {
     UNAME = "somename",
     NEWUNAME = 'somenewname',
     PASSWD = "secret",
     user = nil
 }
 
-    function TestORM:test01_create_row()
+    function Test1ORM:test01_create_row()
         local user_id
 
         -- Create new user but not add to database
@@ -61,7 +61,7 @@ TestORM = {
         assertEquals(self.user.time_create.year, os.date('*t', os.time()).year)
     end
 
-    function TestORM:test02_update_row()
+    function Test1ORM:test02_update_row()
         local user_id = self.user.id
         -- Update user data
         self.user.username = self.NEWUNAME
@@ -71,78 +71,77 @@ TestORM = {
         assertEquals(self.user.id, user_id)
     end
 
-    function TestORM:test03_delete_data()
+    function Test1ORM:test03_delete_data()
         -- Delete user
         self.user:delete()
         assertEquals(self.user.id, nil)
     end
 
-TestORMSelect = {}
 
-    function TestORMSelect:test04()
-        local usernames = {"first", "second", "third", "operator",
+Test2ORMSelect = {}
+    function Test2ORMSelect:test04()
+        self.usernames = {"first", "second", "third", "operator",
                            "creator", "randomusername"}
         local passwords = {"secret_one", "scrt_tw", "hello",
                            "world", "testpasswd", "new"}
         local age = {33, 12, 22, 44, 44, 44}
         local user
 
-        for i = 1, #usernames do
-            user = User({username = usernames[i],
+        for i = 1, #self.usernames do
+            user = User({username = self.usernames[i],
                          password = passwords[i],
                          age = age[i]})
             user:save()
+            assertEquals(Type.is.int(user.id), true)
         end
-
     end
 
-    function TestORMSelect:test05_simple_select()
+    function Test2ORMSelect:test05_simple_select()
         local users = User.get:all()
         assertEquals(users:count(), 6)
     end
 
-    function TestORMSelect:test06_get_one_value()
+    function Test2ORMSelect:test06_get_one_value()
         local user = User.get:first()
         assertEquals(user.username, "first")
     end
 
-    function TestORMSelect:test07_limit_and_offset()
+    function Test2ORMSelect:test07_limit_and_offset()
         local users = User.get:limit(3):offset(2):all()
         local iterator = 3
 
         for _, user in pairs(users) do
-            assertEquals(user.id, iterator)
+            assertEquals(user.username, self.usernames[iterator])
             iterator = iterator + 1
         end
     end
 
-    function TestORMSelect:test08_order()
+    function Test2ORMSelect:test08_order()
         local users = User.get:order_by({desc('id'), asc('username')}):all()
-        assertEquals(users[1].id, 6)
         assertEquals(users[1].username, 'randomusername')
     end
 
-    function TestORMSelect:test09_where()
+    function Test2ORMSelect:test09_where()
         local user = User.get:where({age__lt = 30,
                                      age__lte = 30,
                                      age__gt = 10,
                                      age__gte = 10,
-                                     id__in = {1, 3, 5},
-                                     id__notin = {2, 4, 6},
+                                     id__in = {1, 2, 3, 4, 5, 6, 7},
+                                     id__notin = {500, 1000},
                                      username__null = false
                               }):first()
 
-        assertEquals(user.id, 3)
+        assertEquals(user.username, self.usernames[2])
     end
 
-    function TestORMSelect:test10_group()
+    function Test2ORMSelect:test10_group()
         local user = User.get:group_by({'age'}):all()
 
         assertEquals(user:count(), 4)
         assertEquals(user[4].age, 44)
     end
 
-    function TestORMSelect:test11_having()
+    function Test2ORMSelect:test11_having()
         local user1 = User.get:group_by({'id', 'password'})
                               :having({age__gt = 40,
                                        id__notin = {1,2,3,4,5},
@@ -153,7 +152,7 @@ TestORMSelect = {}
         assertEquals(user1:count(), 1)
     end
 
-    function TestORMSelect:test12_join()
+    function Test2ORMSelect:test12_join()
         local user = User.get:first()
         local group = News({title = "some news", create_user_id = user.id})
         group:save()
@@ -162,11 +161,11 @@ TestORMSelect = {}
 
         local user_group = News.get:join(User):first()
 
-        assertEquals(user_group.user.id, 1)
+        assertEquals(Type.is.int(user_group.user.id), true)
         assertEquals(user_group.id, 1)
     end
 
-    function TestORMSelect:test13_join_with_all()
+    function Test2ORMSelect:test13_join_with_all()
         local user = User.get:first()
         -- Add some test news
         local group = News({title = "some new news", create_user_id = user.id})
@@ -181,7 +180,7 @@ TestORMSelect = {}
         assertEquals(users[1].news_all:count(), 3)
     end
 
-    function TestORMSelect:test14_update_many()
+    function Test2ORMSelect:test14_update_many()
         local users_query = User.get:where({age__gt = 40})
         local users_before = users_query:all()
 
@@ -195,7 +194,7 @@ TestORMSelect = {}
         end
     end
 
-    function TestORMSelect:test15_delete_many()
+    function Test2ORMSelect:test15_delete_many()
         local users_query = User.get:where({age__lt = 40})
         local users_before = users_query:all()
 
@@ -205,6 +204,59 @@ TestORMSelect = {}
 
         assertEquals(users_before:count(), 3)
         assertEquals(users_after:count(), 0)
+    end
+
+
+------------------------------------------------------------------------------
+--                              Transaction test                            --
+------------------------------------------------------------------------------
+
+local transaction = require('orm.tools.transaction')
+
+local save_data = function ()
+    local usernames = {"first", "second", "third", "operator",
+                       "creator", "randomusername"}
+    local passwords = {"secret_one", "scrt_tw", "hello",
+                       "world", "testpasswd", "new"}
+    local age = {33, 12, 22, 44, 44, 44}
+    local user
+
+    for i = 1, #usernames do
+        user = User({username = usernames[i],
+                     password = passwords[i],
+                     age = age[i]})
+        user:save()
+    end
+end
+
+Test3ORMTransaction = {}
+    function Test3ORMTransaction:test16_rollback()
+        local count_of_users = User.get:all():count()
+
+        assertEquals(count_of_users, 0)
+
+        transaction:begin()
+        save_data()
+        transaction:rollback()
+
+        count_of_users = User.get:all():count()
+        assertEquals(count_of_users, 0)
+    end
+
+    function Test3ORMTransaction:test17_commit()
+        local count_of_users = User.get:all():count()
+        assertEquals(count_of_users, 0)
+
+        transaction:begin()
+
+        save_data()
+
+        transaction:commit()
+
+        count_of_users = User.get:all():count()
+        assertEquals(count_of_users, 6)
+
+        User.get:delete()
     end
 
 LuaUnit:run()

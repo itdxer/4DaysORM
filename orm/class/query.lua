@@ -76,12 +76,13 @@ function Query(own_table, data)
 
         -- Add new row to table
         _add = function (self)
-            local insert = "INSERT INTO `" .. self.own_table.__tablename__ .. "` ("
-            local counter = 0
-            local values = ""
+            local insert = ""
+            local values = {}
+            local columns = {}
             local _connect
             local value
             local colname
+            local last_user
 
             for _, table_column in pairs(self.own_table.__colnames) do
                 colname = table_column.name
@@ -111,25 +112,26 @@ function Query(own_table, data)
 
                     colname = "`" .. colname .. "`"
 
-                    -- TODO: save in corectly type
-                    if counter ~= 0 then
-                        colname = ", " .. colname
-                        value = ", " .. value
-                    end
-
-                    values = values .. value
-                    insert = insert .. colname
-
-                    counter = counter + 1
+                    table.insert(values, value)
+                    table.insert(columns, colname)
                 end
             end
 
-            insert = insert .. ") \n\t    VALUES (" .. values .. ")"
+            insert = "INSERT INTO `%s` (%s) \n\t    VALUES (%s)"
+            insert = insert:format(self.own_table.__tablename__,
+                                   table.concat(columns, ","),
+                                   table.concat(values, ","))
 
-            -- TODO: return valid ID
-            _connect = db:insert(insert)
+            _connect = db:execute(insert)
 
-            self._data.id = {new = _connect}
+            if _connect then
+                -- need for get last added user id
+                last_user = self.own_table.get:order_by({desc('id')}):first()
+
+                if Type.is.table(last_user) and last_user.id then
+                    self._data.id = {new = last_user.id}
+                end
+            end
         end,
 
         -- Update data in database
@@ -154,7 +156,7 @@ function Query(own_table, data)
                 end
             end
 
-            set = table.join(equation_for_set, ",")
+            set = table.concat(equation_for_set, ",")
 
             if set ~= "" then
                 update = update .. " SET " .. set .. "\n\t    WHERE `" .. ID .. "` = " .. self.id
