@@ -4,7 +4,9 @@
 
 Before the beginning you should add some simple settings to your database configuration. You must create some global variable `DB`:
 
-    DB = {}
+```lua
+DB = {}
+```
 
 **Development configurations:**
 
@@ -29,19 +31,24 @@ Before the beginning you should add some simple settings to your database config
 
 After setting configurations you can add 2 modules import to your file
 
-    local Table = require("orm.model")
-    local fields = require("orm.tools.fields")
+```lua
+local Table = require("orm.model")
+local fields = require("orm.tools.fields")
+```
 
 ## Create table ##
 
-    local User = Table({
-        __tablename__ = "user",
-        username = fields.CharField({max_length = 100, unique = true}),
-        password = fields.CharField({max_length = 50, unique = true}),
-        age = fields.IntegerField({max_length = 2, null = true}),
-        job = fields.CharField({max_length = 50, null = true}),
-        time_create = fields.DateTimeField({null = true})
-    })
+
+```lua
+local User = Table({
+    __tablename__ = "user",
+    username = fields.CharField({max_length = 100, unique = true}),
+    password = fields.CharField({max_length = 50, unique = true}),
+    age = fields.IntegerField({max_length = 2, null = true}),
+    job = fields.CharField({max_length = 50, null = true}),
+    time_create = fields.DateTimeField({null = true})
+})
+```
 
 For every table is created a column `id` with `PRIMARY KEY` field by default.
 
@@ -59,13 +66,13 @@ Also you can add different settings to your table fields
 
 Supported types of table fields
 
-1. **`CharField`** - Creates `VARCHAR` field
-2. **`IntegerField`** - Creates `INTEGER` field
-3. **`TextField`** - Creates `TEXT` field
-4. **`BooleanField`** - Creates `BOOLEAN` field
-5. **`DateTimeField`** - Creates `INTEGER` field but brings back `os.date` instance 
-6. **`PrimaryField`** - Creates `INTEGER` field with `PRIMARY KEY`
-7. **`ForeignKey`** - Creates relationships between tables. 
+1. `CharField` - Creates `VARCHAR` field
+2. `IntegerField` - Creates `INTEGER` field
+3. `TextField` - Creates `TEXT` field
+4. `BooleanField` - Creates `BOOLEAN` field
+5. `DateTimeField` - Creates `INTEGER` field but brings back `os.date` instance 
+6. `PrimaryField` - Creates `INTEGER` field with `PRIMARY KEY`
+7. `ForeignKey` - Creates relationships between tables. 
 
 Also you can create your types of table fields. But about it later.
 
@@ -73,40 +80,59 @@ Also you can create your types of table fields. But about it later.
 
 Try to create a new user:
 
-    local user = User({
-        username = "Bob Smith",
-        password = "SuperSecretPassword",
-        time_create = os.time()
-    })
+```lua
+local user = User({
+    username = "Bob Smith",
+    password = "SuperSecretPassword",
+    time_create = os.time()
+})
+```
 
 Now you created new user, but it was not added to database. You can add him.
 
-    user:save()
+
+```lua
+user:save()
+```
 
 Now this user with all the information is in database. We can get his `id`
 
-    print("User " .. user.username .. " has id " .. user.id)
-    -- User Bob Smith has id 1
+```lua
+print("User " .. user.username .. " has id " .. user.id)
+-- User Bob Smith has id 1
+```
 
 ## Update data ##
 
 You can change your data:
 
-    user.username = "John Smith"
+
+```lua
+user.username = "John Smith"
+```
 
 This value was changed in model, but it has not been changed in database table.
 
-    user:save()
+
+```lua
+user:save()
+```
 
 Now try to get new username for user:
 
-    print("New user name is " .. user.username) -- New user name is John Smith 
+
+```lua
+print("New user name is " .. user.username) -- New user name is John Smith 
+```
 
 You have updated in database only the column that you changed.
 You can also edit columns for the value by another terms:
 
-    User.get:where({time_create__null = true})
-            :update({time_create = os.time()})
+
+```lua
+User.get:where({time_create__null = true})
+        :update({time_create = os.time()})
+```
 
 *The conditions will be described in the next chapter*
 
@@ -114,15 +140,21 @@ You can also edit columns for the value by another terms:
 
 And also you can remove your data from table.
 
-    user:delete()
+
+```lua
+user:delete()
+```
 
 You can also delete columns for the value by another terms:
 
-    -- add test user
-    user = User({username = "SomebodyNew", password = "NotSecret"})
-    user:save()
-    
-    User.get:where({username = "SomebodyNew"}):delete()
+
+```lua
+-- add test user
+user = User({username = "SomebodyNew", password = "NotSecret"})
+user:save()
+
+User.get:where({username = "SomebodyNew"}):delete()
+```
 
 *The conditions will be described in the next chapter*
 
@@ -130,32 +162,41 @@ You can also delete columns for the value by another terms:
 
 Also we can get data from table. But before this let's create 5 test users.
 
-    user = User({username = "First user", password = "secret1", age = 22})
-    user:save()
 
-    user = User({username = "Second user", password = "secret_test", job = "Lua developer"})
-    user:save()
+```lua
+user = User({username = "First user", password = "secret1", age = 22})
+user:save()
 
-    user = User({username = "Another user", password = "old_test", age = 44})
-    user:save()
+user = User({username = "Second user", password = "secret_test", job = "Lua developer"})
+user:save()
 
-    user = User({username = "New user", password = "some_passwd", age = 23, job = "Manager"})
-    user:save()
+user = User({username = "Another user", password = "old_test", age = 44})
+user:save()
 
-    user = User({username = "Old user", password = "secret_passwd", age = 44})
-    user:save()
+user = User({username = "New user", password = "some_passwd", age = 23, job = "Manager"})
+user:save()
+
+user = User({username = "Old user", password = "secret_passwd", age = 44})
+user:save()
+```
 
 And now try get **one of them**:
 
-    local first_user = User.get:first()
-    print("First user name is: " .. first_user.username)
-    -- First user name is: First user
+
+```lua
+local first_user = User.get:first()
+print("First user name is: " .. first_user.username)
+-- First user name is: First user
+```
 
 But also we can **get all users** from table:
 
-    local users = User.get:all()
-    print("We get " .. users:count() .. " users")
-    -- We get 5 users
+
+```lua
+local users = User.get:all()
+print("We get " .. users:count() .. " users")
+-- We get 5 users
+```
 
 Method `count` returns number of users in the list.
 
@@ -163,29 +204,39 @@ Method `count` returns number of users in the list.
 
 Sometime we need to get not one but not all users. For the first, try to get first 2 users from the table.
 
-    users = User.get:limit(2):all()
-    print("We get " .. users:count() .. " users")
-    -- We get 2 users
-    print("Second user name is: " .. users[2].username)
-    -- Second user name is: Second user
+
+```lua
+users = User.get:limit(2):all()
+print("We get " .. users:count() .. " users")
+-- We get 2 users
+print("Second user name is: " .. users[2].username)
+-- Second user name is: Second user
+```
 
 Great! But if we want to get next two users? We can do this by using following example:
 
-    users = User.get:limit(2):offset(2):all()
-    print("Second user name is: " .. users[2].username)
-    -- Second user name is: New user
+```lua
+users = User.get:limit(2):offset(2):all()
+print("Second user name is: " .. users[2].username)
+-- Second user name is: New user
+```
 
 ### Order result ###
 
 Also you can sort your result by order. We want to sort users from the oldest to the youngest.
 
-    users = User.get:order_by({desc('age')}):all()
-    print("First user id: " .. users[1].id)
-    -- First user id: 3
+
+```lua
+users = User.get:order_by({desc('age')}):all()
+print("First user id: " .. users[1].id)
+-- First user id: 3
+```
 
 But we have 2 users with age 44. We can order them by name.
 
-    users = User.get:order_by({desc('age'), asc('username')}):all()
+```lua
+users = User.get:order_by({desc('age'), asc('username')}):all()
+```
     
 You can order your table query by other parameters too.
 
@@ -193,22 +244,29 @@ You can order your table query by other parameters too.
 
 And now try to group your results:
 
-    users = User.get:group_by({'age'}):all()
-    print('Find ' .. users:count() ..' users')
-    -- Find 4 users
+```lua
+users = User.get:group_by({'age'}):all()
+print('Find ' .. users:count() ..' users')
+-- Find 4 users
+```
 
 ### Where and Having ###
 
 These two methods have the same syntax. But `having` you can use only with `group_by `method. There's one simple example:
 
-    user = User.get:where({username = "First user"}):first()
-    print("User id is: " .. user.id) -- User id is: 1
+
+```lua
+user = User.get:where({username = "First user"}):first()
+print("User id is: " .. user.id) -- User id is: 1
+```
 
 And the same for `having`:
 
-    users = User.get:group_by({'id'}):having({age = 44}):all()
-    print("We get " .. users:count() .. " users with age 44")
-    -- We get 2 users with age 44
+```lua
+users = User.get:group_by({'id'}):having({age = 44}):all()
+print("We get " .. users:count() .. " users with age 44")
+-- We get 2 users with age 44
+```
 
 Great! But what if we need to do more operations than just a differentiation of table fields. We can do that! This is the list with some rules:
 
@@ -227,21 +285,22 @@ Great! But what if we need to do more operations than just a differentiation of 
 
 But if we do ...
 
-    
-    user = User.get:where({age__lt = 30,
-                           age__lte = 30,
-                           age__gt = 10,
-                           age__gte = 10
+```lua
+user = User.get:where({age__lt = 30,
+                       age__lte = 30,
+                       age__gt = 10,
+                       age__gte = 10
+                })
+                :order_by({asc('id')})
+                :group_by({'age', 'password'})
+                :having({id__in = {1, 3, 5},
+                         id__notin = {2, 4, 6},
+                         username__null = false
                     })
-                    :order_by({asc('id')})
-                    :group_by({'age', 'password'})
-                    :having({id__in = {1, 3, 5},
-                                id__notin = {2, 4, 6},
-                                username__null = false
-                    })
-                    :limit(2)
-                    :offset(1)
-                    :all()
+                :limit(2)
+                :offset(1)
+                :all()
+```
 
 This example doesn't make sense. But it works!
 
@@ -249,43 +308,55 @@ This example doesn't make sense. But it works!
 
 Now we can create a join of tables. But before that we create some table with  `foreign key` column:
 
-    local News = Table({
-        __tablename__ = "group",
-        title = fields.CharField({max_length = 100, unique = false, null = false}),
-        text = fields.TextField({null = true}),
-        create_user_id = fields.ForeignKey({to = User})
-    })
+
+```lua
+local News = Table({
+    __tablename__ = "group",
+    title = fields.CharField({max_length = 100, unique = false, null = false}),
+    text = fields.TextField({null = true}),
+    create_user_id = fields.ForeignKey({to = User})
+})
+```
 
 And add two test news:
 
-    local user = User.get:first()
 
-    local news = News({title = "Some news", create_user_id = user.id})
-    news:save()
+```lua
+local user = User.get:first()
 
-    news = News({title = "Other title", create_user_id = user.id})
-    news:save()
+local news = News({title = "Some news", create_user_id = user.id})
+news:save()
+
+news = News({title = "Other title", create_user_id = user.id})
+news:save()
+```
 
 Now try to get all the news from the owner.
 
-    local news = News.get:join(User):all()
-    print("First news user id is: " .. news[1].user.id) -- First news user id is: 1
+```lua
+local news = News.get:join(User):all()
+print("First news user id is: " .. news[1].user.id) -- First news user id is: 1
+```
 
 But if we want to get all users and also to get three news for each user . We can do this by following example:
 
-    local user = User.get:join(News):first()
-    print("User " .. user.id .. " has " .. user.news_all:count() .. " news")
-    -- User 1 has 2 news
+```lua
+local user = User.get:join(News):first()
+print("User " .. user.id .. " has " .. user.news_all:count() .. " news")
+-- User 1 has 2 news
     
-    for _, user_news in pairs(user.news_all) do
-        print(user_news.title)
-    end
-    -- Some news
-    -- Other title
+for _, user_news in pairs(user.news_all) do
+    print(user_news.title)
+end
+-- Some news
+-- Other title
+```
 
 If you want to get all the values from tables you can combine table's names and prefix "_all". Like in previous example
 
-    user.news_all
+```lua
+user.news_all
+```
 
 `news_all` - returns a list of all news for current user or `nil` if news does not exist.
 
@@ -293,21 +364,23 @@ If you want to get all the values from tables you can combine table's names and 
 
 We can create a field type for every table. Try to create EmailField type:
 
-    fields.EmailField = fields:register({
-        __type__ = "varchar",
-        settings = {
-            max_length = 100
-        },
-        validator = function (value)
-            return value:match("[A-Za-z0-9%.%%%+%-]+@[A-Za-z0-9%.%%%+%-]+%.%w%w%w?%w?")
-        end,
-        to_type = function (value)
-            return value
-        end,
-        as = function (value)
-            return "'" .. value .. "'"
-        end
-    })
+```lua
+fields.EmailField = fields:register({
+    __type__ = "varchar",
+    settings = {
+        max_length = 100
+    },
+    validator = function (value)
+        return value:match("[A-Za-z0-9%.%%%+%-]+@[A-Za-z0-9%.%%%+%-]+%.%w%w%w?%w?")
+    end,
+    to_type = function (value)
+        return value
+    end,
+    as = function (value)
+        return "'" .. value .. "'"
+    end
+})
+```
 
 Let's make it step by step:
 
@@ -322,38 +395,40 @@ By default this value is `"varchar"`.
 
 `as` - returns the value from lua to SQL. By default it is not parsed value.
 
-    local UserEmails = Table({
-        __tablename__ = "user_emails",
-        email = fields.EmailField(),
-        user_id = fields.ForeignKey()
-    })
+```lua
+local UserEmails = Table({
+    __tablename__ = "user_emails",
+    email = fields.EmailField(),
+    user_id = fields.ForeignKey()
+})
+
+local user_email = UserEmails({
+    email = "mailexample.com",
+    user_id = user.id
+})
+user_email:save()
+-- Not save!
+
+-- And try again
+local user_email = UserEmails({
+    email = "mail@example.com",
+    user_id = user.id
+})
+user_email:save()
+-- This email added!
     
-    local user_email = UserEmails({
-        email = "mailexample.com",
-        user_id = user.id
-    })
-    user_email:save()
-    -- Not save!
+user_email.email = "not email"
+user_email:save()
+-- Not update
     
-    -- And try again
-    local user_email = UserEmails({
-        email = "mail@example.com",
-        user_id = user.id
-    })
-    user_email:save()
-    -- This email added!
-    
-    user_email.email = "not email"
-    user_email:save()
-    -- Not update
-    
-    user_email.email = "valid@email.com"
-    user_email:save()
-    -- Update!
+user_email.email = "valid@email.com"
+user_email:save()
+-- Update!
+```
 
 ## Corona SDK support ##
 
-Will be implemented soon...
+Will be implemented ...
 
 ## Final ##
 
