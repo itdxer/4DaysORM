@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>4DaysORM by itdxer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">4DaysORM</h1>
+      <h2 class="project-tagline">Lua 4Days ORM for sqlite3 and mysql</h2>
+      <a href="https://github.com/itdxer/4DaysORM" class="btn">View on GitHub</a>
+      <a href="https://github.com/itdxer/4DaysORM/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/itdxer/4DaysORM/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="lua-4days-orm-10-minutes-tutorial" class="anchor" href="#lua-4days-orm-10-minutes-tutorial" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lua 4Days ORM 10 minutes tutorial</h1>
+
+<h2>
+<a id="database-configuration" class="anchor" href="#database-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Database configuration</h2>
+
+<p>Before the beginning you should add some simple settings to your database configuration. You must create some global variable <code>DB</code>:</p>
+
+<div class="highlight highlight-lua"><pre>DB <span class="pl-k">=</span> {}</pre></div>
+
+<p><strong>Development configurations:</strong></p>
+
+<ol>
+<li>
+<code>new</code> - if this value is <code>true</code>, then previous database was removed and new  was created (<em><code>true</code> by default</em>).</li>
+<li>
+<code>backtrace</code> - if this value is <code>true</code>, than you will be able to see in console all Warnings, Errors and Information messages (<em><code>true</code> by default</em>).</li>
+<li>
+<code>DEBUG</code> - if this value is <code>true</code>, you will be able to see in console all SQL queries (<em><code>true</code> by default</em>).</li>
+</ol>
+
+<p><strong>Database configurations</strong></p>
+
+<ol>
+<li>
+<code>type</code> - by default <code>"sqlite3"</code>. Also it can be:
+
+<ul>
+<li>
+<code>"mysql"</code> - for MySQL database</li>
+<li>
+<code>"postgres"</code> - for PostgreSQL database (<em>implemented soon</em>)</li>
+</ul>
+</li>
+<li>
+<code>name</code> - this is a path to database file for <code>"sqlite3"</code>. For other databases this value contains database name. (<em>by default <code>"database.db"</code></em>)</li>
+<li>
+<code>username</code> - database user name (<em>by default <code>nil</code></em>)</li>
+<li>
+<code>password</code> - database password (<em>by default <code>nil</code></em>)</li>
+<li>
+<code>host</code> - database host (<em>by default <code>nil</code></em>)</li>
+<li>
+<code>port</code> - database host port  (<em>by default <code>nil</code></em>)</li>
+</ol>
+
+<hr>
+
+<p>After setting configurations you can add 2 modules import to your file</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> Table <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">"</span>orm.model<span class="pl-pds">"</span></span>)
+<span class="pl-k">local</span> fields <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">"</span>orm.tools.fields<span class="pl-pds">"</span></span>)</pre></div>
+
+<h2>
+<a id="create-table" class="anchor" href="#create-table" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create table</h2>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> User <span class="pl-k">=</span> <span class="pl-c1">Table</span>({
+    __tablename__ <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>user<span class="pl-pds">"</span></span>,
+    username <span class="pl-k">=</span> fields.<span class="pl-c1">CharField</span>({max_length <span class="pl-k">=</span> <span class="pl-c1">100</span>, unique <span class="pl-k">=</span> <span class="pl-c1">true</span>}),
+    password <span class="pl-k">=</span> fields.<span class="pl-c1">CharField</span>({max_length <span class="pl-k">=</span> <span class="pl-c1">50</span>, unique <span class="pl-k">=</span> <span class="pl-c1">true</span>}),
+    age <span class="pl-k">=</span> fields.<span class="pl-c1">IntegerField</span>({max_length <span class="pl-k">=</span> <span class="pl-c1">2</span>, null <span class="pl-k">=</span> <span class="pl-c1">true</span>}),
+    job <span class="pl-k">=</span> fields.<span class="pl-c1">CharField</span>({max_length <span class="pl-k">=</span> <span class="pl-c1">50</span>, null <span class="pl-k">=</span> <span class="pl-c1">true</span>}),
+    time_create <span class="pl-k">=</span> fields.<span class="pl-c1">DateTimeField</span>({null <span class="pl-k">=</span> <span class="pl-c1">true</span>})
+})</pre></div>
+
+<p>For every table is created a column <code>id</code> with <code>PRIMARY KEY</code> field by default.</p>
+
+<p><code>__tablename__</code> is required value which should contain the name of the table.</p>
+
+<p>Also you can add different settings to your table fields</p>
+
+<ol>
+<li>
+<code>max_length</code> - it is a maximum allowable value of symbols that you can use in a string</li>
+<li>
+<code>unique</code> - if this value is <code>true</code> then all the column's values are unique </li>
+<li>
+<code>null</code> - can be <code>true</code> or <code>false</code>. If value is <code>true</code> then value in table will be saved as <code>NULL</code>.</li>
+<li>
+<code>default</code> - if you didn't add any value to this field - it is going to be saved as default value.</li>
+<li>
+<code>primary_key</code> - If you want to add some value as <code>primary key</code>, you can set this value as <code>true</code>.</li>
+</ol>
+
+<h2>
+<a id="types-of-table-fields" class="anchor" href="#types-of-table-fields" aria-hidden="true"><span class="octicon octicon-link"></span></a>Types of table fields</h2>
+
+<p>Supported types of table fields</p>
+
+<ol>
+<li>
+<code>CharField</code> - Creates <code>VARCHAR</code> field</li>
+<li>
+<code>IntegerField</code> - Creates <code>INTEGER</code> field</li>
+<li>
+<code>TextField</code> - Creates <code>TEXT</code> field</li>
+<li>
+<code>BooleanField</code> - Creates <code>BOOLEAN</code> field</li>
+<li>
+<code>DateTimeField</code> - Creates <code>INTEGER</code> field but brings back <code>os.date</code> instance </li>
+<li>
+<code>PrimaryField</code> - Creates <code>INTEGER</code> field with <code>PRIMARY KEY</code>
+</li>
+<li>
+<code>ForeignKey</code> - Creates relationships between tables. </li>
+</ol>
+
+<p>Also you can create your types of table fields. But about it later.</p>
+
+<h2>
+<a id="create-data" class="anchor" href="#create-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create data</h2>
+
+<p>Try to create a new user:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> user <span class="pl-k">=</span> <span class="pl-c1">User</span>({
+    username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Bob Smith<span class="pl-pds">"</span></span>,
+    password <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>SuperSecretPassword<span class="pl-pds">"</span></span>,
+    time_create <span class="pl-k">=</span> <span class="pl-c1">os.time</span>()
+})</pre></div>
+
+<p>Now you created new user, but it was not added to database. You can add him.</p>
+
+<div class="highlight highlight-lua"><pre>user:<span class="pl-c1">save</span>()</pre></div>
+
+<p>Now this user with all the information is in database. We can get his <code>id</code></p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>User <span class="pl-pds">"</span></span> <span class="pl-k">..</span> user.<span class="pl-smi">username</span> <span class="pl-k">..</span> <span class="pl-s"><span class="pl-pds">"</span> has id <span class="pl-pds">"</span></span> <span class="pl-k">..</span> user.<span class="pl-smi">id</span>)
+<span class="pl-c">-- User Bob Smith has id 1</span></pre></div>
+
+<h2>
+<a id="update-data" class="anchor" href="#update-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Update data</h2>
+
+<p>You can change your data:</p>
+
+<div class="highlight highlight-lua"><pre>user.<span class="pl-smi">username</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>John Smith<span class="pl-pds">"</span></span></pre></div>
+
+<p>This value was changed in model, but it has not been changed in database table.</p>
+
+<div class="highlight highlight-lua"><pre>user:<span class="pl-c1">save</span>()</pre></div>
+
+<p>Now try to get new username for user:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>New user name is <span class="pl-pds">"</span></span> <span class="pl-k">..</span> user.<span class="pl-smi">username</span>) <span class="pl-c">-- New user name is John Smith </span></pre></div>
+
+<p>You have updated in database only the column that you changed.
+You can also edit columns for the value by another terms:</p>
+
+<div class="highlight highlight-lua"><pre>User.<span class="pl-smi">get</span>:<span class="pl-c1">where</span>({time_create__null <span class="pl-k">=</span> <span class="pl-c1">true</span>})
+        :<span class="pl-c1">update</span>({time_create <span class="pl-k">=</span> <span class="pl-c1">os.time</span>()})</pre></div>
+
+<p><em>The conditions will be described in the next chapter</em></p>
+
+<h2>
+<a id="remove-data" class="anchor" href="#remove-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Remove data</h2>
+
+<p>And also you can remove your data from table.</p>
+
+<div class="highlight highlight-lua"><pre>user:<span class="pl-c1">delete</span>()</pre></div>
+
+<p>You can also delete columns for the value by another terms:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-c">-- add test user</span>
+user <span class="pl-k">=</span> <span class="pl-c1">User</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>SomebodyNew<span class="pl-pds">"</span></span>, password <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>NotSecret<span class="pl-pds">"</span></span>})
+user:<span class="pl-c1">save</span>()
+
+User.<span class="pl-smi">get</span>:<span class="pl-c1">where</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>SomebodyNew<span class="pl-pds">"</span></span>}):<span class="pl-c1">delete</span>()</pre></div>
+
+<p><em>The conditions will be described in the next chapter</em></p>
+
+<h2>
+<a id="get-data" class="anchor" href="#get-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get data</h2>
+
+<p>Also we can get data from table. But before this let's create 5 test users.</p>
+
+<div class="highlight highlight-lua"><pre>user <span class="pl-k">=</span> <span class="pl-c1">User</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>First user<span class="pl-pds">"</span></span>, password <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>secret1<span class="pl-pds">"</span></span>, age <span class="pl-k">=</span> <span class="pl-c1">22</span>})
+user:<span class="pl-c1">save</span>()
+
+user <span class="pl-k">=</span> <span class="pl-c1">User</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Second user<span class="pl-pds">"</span></span>, password <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>secret_test<span class="pl-pds">"</span></span>, job <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Lua developer<span class="pl-pds">"</span></span>})
+user:<span class="pl-c1">save</span>()
+
+user <span class="pl-k">=</span> <span class="pl-c1">User</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Another user<span class="pl-pds">"</span></span>, password <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>old_test<span class="pl-pds">"</span></span>, age <span class="pl-k">=</span> <span class="pl-c1">44</span>})
+user:<span class="pl-c1">save</span>()
+
+user <span class="pl-k">=</span> <span class="pl-c1">User</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>New user<span class="pl-pds">"</span></span>, password <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>some_passwd<span class="pl-pds">"</span></span>, age <span class="pl-k">=</span> <span class="pl-c1">23</span>, job <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Manager<span class="pl-pds">"</span></span>})
+user:<span class="pl-c1">save</span>()
+
+user <span class="pl-k">=</span> <span class="pl-c1">User</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Old user<span class="pl-pds">"</span></span>, password <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>secret_passwd<span class="pl-pds">"</span></span>, age <span class="pl-k">=</span> <span class="pl-c1">44</span>})
+user:<span class="pl-c1">save</span>()</pre></div>
+
+<p>And now try get <strong>one of them</strong>:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> first_user <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">first</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>First user name is: <span class="pl-pds">"</span></span> <span class="pl-k">..</span> first_user.<span class="pl-smi">username</span>)
+<span class="pl-c">-- First user name is: First user</span></pre></div>
+
+<p>But also we can <strong>get all users</strong> from table:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> users <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">all</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>We get <span class="pl-pds">"</span></span> <span class="pl-k">..</span> users:<span class="pl-c1">count</span>() <span class="pl-k">..</span> <span class="pl-s"><span class="pl-pds">"</span> users<span class="pl-pds">"</span></span>)
+<span class="pl-c">-- We get 5 users</span></pre></div>
+
+<p>Method <code>count</code> returns number of users in the list.</p>
+
+<h3>
+<a id="limit-and-offset" class="anchor" href="#limit-and-offset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Limit and Offset</h3>
+
+<p>Sometime we need to get not one but not all users. For the first, try to get first 2 users from the table.</p>
+
+<div class="highlight highlight-lua"><pre>users <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">limit</span>(<span class="pl-c1">2</span>):<span class="pl-c1">all</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>We get <span class="pl-pds">"</span></span> <span class="pl-k">..</span> users:<span class="pl-c1">count</span>() <span class="pl-k">..</span> <span class="pl-s"><span class="pl-pds">"</span> users<span class="pl-pds">"</span></span>)
+<span class="pl-c">-- We get 2 users</span>
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>Second user name is: <span class="pl-pds">"</span></span> <span class="pl-k">..</span> users[<span class="pl-c1">2</span>].<span class="pl-smi">username</span>)
+<span class="pl-c">-- Second user name is: Second user</span></pre></div>
+
+<p>Great! But if we want to get next two users? We can do this by using following example:</p>
+
+<div class="highlight highlight-lua"><pre>users <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">limit</span>(<span class="pl-c1">2</span>):<span class="pl-c1">offset</span>(<span class="pl-c1">2</span>):<span class="pl-c1">all</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>Second user name is: <span class="pl-pds">"</span></span> <span class="pl-k">..</span> users[<span class="pl-c1">2</span>].<span class="pl-smi">username</span>)
+<span class="pl-c">-- Second user name is: New user</span></pre></div>
+
+<h3>
+<a id="order-result" class="anchor" href="#order-result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Order result</h3>
+
+<p>Also you can sort your result by order. We want to sort users from the oldest to the youngest.</p>
+
+<div class="highlight highlight-lua"><pre>users <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">order_by</span>({<span class="pl-c1">desc</span>(<span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>)}):<span class="pl-c1">all</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>First user id: <span class="pl-pds">"</span></span> <span class="pl-k">..</span> users[<span class="pl-c1">1</span>].<span class="pl-smi">id</span>)
+<span class="pl-c">-- First user id: 3</span></pre></div>
+
+<p>But we have 2 users with age 44. We can order them by name.</p>
+
+<div class="highlight highlight-lua"><pre>users <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">order_by</span>({<span class="pl-c1">desc</span>(<span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>), <span class="pl-c1">asc</span>(<span class="pl-s"><span class="pl-pds">'</span>username<span class="pl-pds">'</span></span>)}):<span class="pl-c1">all</span>()</pre></div>
+
+<p>You can order your table query by other parameters too.</p>
+
+<h3>
+<a id="group-result" class="anchor" href="#group-result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Group result</h3>
+
+<p>And now try to group your results:</p>
+
+<div class="highlight highlight-lua"><pre>users <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">group_by</span>({<span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>}):<span class="pl-c1">all</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">'</span>Find <span class="pl-pds">'</span></span> <span class="pl-k">..</span> users:<span class="pl-c1">count</span>() <span class="pl-k">..</span><span class="pl-s"><span class="pl-pds">'</span> users<span class="pl-pds">'</span></span>)
+<span class="pl-c">-- Find 4 users</span></pre></div>
+
+<h3>
+<a id="where-and-having" class="anchor" href="#where-and-having" aria-hidden="true"><span class="octicon octicon-link"></span></a>Where and Having</h3>
+
+<p>These two methods have the same syntax. But <code>having</code> you can use only with <code>group_by</code>method. There's one simple example:</p>
+
+<div class="highlight highlight-lua"><pre>user <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">where</span>({username <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>First user<span class="pl-pds">"</span></span>}):<span class="pl-c1">first</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>User id is: <span class="pl-pds">"</span></span> <span class="pl-k">..</span> user.<span class="pl-smi">id</span>) <span class="pl-c">-- User id is: 1</span></pre></div>
+
+<p>And the same for <code>having</code>:</p>
+
+<div class="highlight highlight-lua"><pre>users <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">group_by</span>({<span class="pl-s"><span class="pl-pds">'</span>id<span class="pl-pds">'</span></span>}):<span class="pl-c1">having</span>({age <span class="pl-k">=</span> <span class="pl-c1">44</span>}):<span class="pl-c1">all</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>We get <span class="pl-pds">"</span></span> <span class="pl-k">..</span> users:<span class="pl-c1">count</span>() <span class="pl-k">..</span> <span class="pl-s"><span class="pl-pds">"</span> users with age 44<span class="pl-pds">"</span></span>)
+<span class="pl-c">-- We get 2 users with age 44</span></pre></div>
+
+<p>Great! But what if we need to do more operations than just a differentiation of table fields. We can do that! This is the list with some rules:</p>
+
+<p><em>For example we use for default <code>colname</code>. It can be any column in your model</em></p>
+
+<ol>
+<li>
+<code>colname = value</code> - the same as <code>colname = value</code> </li>
+<li>
+<code>colname__lt = value</code> - the same as <code>colname &lt; value</code> <em>(<code>value</code> must be a number)</em>
+</li>
+<li>
+<code>colname__lte = value</code> - the same as <code>colname &lt;= value</code> <em>(<code>value</code> must be a number)</em>
+</li>
+<li>
+<code>colname__gt = value</code> - the same as <code>colname &gt; value</code> <em>(<code>value</code> must be a number)</em>
+</li>
+<li>
+<code>colname__gte = value</code> - the same as <code>colname &gt;= value</code> <em>(<code>value</code> must be a number)</em>
+</li>
+<li>
+<code>colname__in = {v1, v2,...,vn}</code> - the same as <code>colname in (value1, value2,...,vn)</code> <em>(<code>vn</code> can be number, string)</em>
+</li>
+<li>
+<code>colname__notin = {v1, v2,...,vn}</code> - the same as <code>colname not in (value1, value2,...,vn)</code> <em>(<code>vn</code> can be number, string)</em>
+</li>
+<li>
+<code>colname__null = value</code> - if value is <code>true</code> then result is <code>colname is NULL</code>, but if value is <code>false</code> then result is <code>colname is not NULL</code>
+</li>
+</ol>
+
+<h3>
+<a id="super-select" class="anchor" href="#super-select" aria-hidden="true"><span class="octicon octicon-link"></span></a>Super SELECT</h3>
+
+<p>But if we do ...</p>
+
+<div class="highlight highlight-lua"><pre>user <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">where</span>({age__lt <span class="pl-k">=</span> <span class="pl-c1">30</span>,
+                       age__lte <span class="pl-k">=</span> <span class="pl-c1">30</span>,
+                       age__gt <span class="pl-k">=</span> <span class="pl-c1">10</span>,
+                       age__gte <span class="pl-k">=</span> <span class="pl-c1">10</span>
+                })
+                :<span class="pl-c1">order_by</span>({<span class="pl-c1">asc</span>(<span class="pl-s"><span class="pl-pds">'</span>id<span class="pl-pds">'</span></span>)})
+                :<span class="pl-c1">group_by</span>({<span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>password<span class="pl-pds">'</span></span>})
+                :<span class="pl-c1">having</span>({id__in <span class="pl-k">=</span> {<span class="pl-c1">1</span>, <span class="pl-c1">3</span>, <span class="pl-c1">5</span>},
+                         id__notin <span class="pl-k">=</span> {<span class="pl-c1">2</span>, <span class="pl-c1">4</span>, <span class="pl-c1">6</span>},
+                         username__null <span class="pl-k">=</span> <span class="pl-c1">false</span>
+                    })
+                :<span class="pl-c1">limit</span>(<span class="pl-c1">2</span>)
+                :<span class="pl-c1">offset</span>(<span class="pl-c1">1</span>)
+                :<span class="pl-c1">all</span>()</pre></div>
+
+<p>This example doesn't make sense. But it works!</p>
+
+<h3>
+<a id="join-tables" class="anchor" href="#join-tables" aria-hidden="true"><span class="octicon octicon-link"></span></a>JOIN TABLES</h3>
+
+<p>Now we can create a join of tables. But before that we create some table with  <code>foreign key</code> column:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> News <span class="pl-k">=</span> <span class="pl-c1">Table</span>({
+    __tablename__ <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>group<span class="pl-pds">"</span></span>,
+    title <span class="pl-k">=</span> fields.<span class="pl-c1">CharField</span>({max_length <span class="pl-k">=</span> <span class="pl-c1">100</span>, unique <span class="pl-k">=</span> <span class="pl-c1">false</span>, null <span class="pl-k">=</span> <span class="pl-c1">false</span>}),
+    text <span class="pl-k">=</span> fields.<span class="pl-c1">TextField</span>({null <span class="pl-k">=</span> <span class="pl-c1">true</span>}),
+    create_user_id <span class="pl-k">=</span> fields.<span class="pl-c1">ForeignKey</span>({to <span class="pl-k">=</span> User})
+})</pre></div>
+
+<p>And add two test news:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> user <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">first</span>()
+
+<span class="pl-k">local</span> news <span class="pl-k">=</span> <span class="pl-c1">News</span>({title <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Some news<span class="pl-pds">"</span></span>, create_user_id <span class="pl-k">=</span> user.<span class="pl-smi">id</span>})
+news:<span class="pl-c1">save</span>()
+
+news <span class="pl-k">=</span> <span class="pl-c1">News</span>({title <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>Other title<span class="pl-pds">"</span></span>, create_user_id <span class="pl-k">=</span> user.<span class="pl-smi">id</span>})
+news:<span class="pl-c1">save</span>()</pre></div>
+
+<p>Now try to get all the news from the owner.</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> news <span class="pl-k">=</span> News.<span class="pl-smi">get</span>:<span class="pl-c1">join</span>(User):<span class="pl-c1">all</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>First news user id is: <span class="pl-pds">"</span></span> <span class="pl-k">..</span> news[<span class="pl-c1">1</span>].<span class="pl-smi">user</span>.<span class="pl-smi">id</span>) <span class="pl-c">-- First news user id is: 1</span></pre></div>
+
+<p>But if we want to get all users and also to get three news for each user . We can do this by following example:</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> user <span class="pl-k">=</span> User.<span class="pl-smi">get</span>:<span class="pl-c1">join</span>(News):<span class="pl-c1">first</span>()
+<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>User <span class="pl-pds">"</span></span> <span class="pl-k">..</span> user.<span class="pl-smi">id</span> <span class="pl-k">..</span> <span class="pl-s"><span class="pl-pds">"</span> has <span class="pl-pds">"</span></span> <span class="pl-k">..</span> user.<span class="pl-smi">news_all</span>:<span class="pl-c1">count</span>() <span class="pl-k">..</span> <span class="pl-s"><span class="pl-pds">"</span> news<span class="pl-pds">"</span></span>)
+<span class="pl-c">-- User 1 has 2 news</span>
+
+<span class="pl-k">for</span> _, user_news <span class="pl-k">in</span> <span class="pl-c1">pairs</span>(user.<span class="pl-smi">news_all</span>) <span class="pl-k">do</span>
+    <span class="pl-c1">print</span>(user_news.<span class="pl-smi">title</span>)
+<span class="pl-k">end</span>
+<span class="pl-c">-- Some news</span>
+<span class="pl-c">-- Other title</span></pre></div>
+
+<p>If you want to get all the values from tables you can combine table's names and prefix "_all". Like in previous example</p>
+
+<div class="highlight highlight-lua"><pre>user.<span class="pl-smi">news_all</span></pre></div>
+
+<p><code>news_all</code> - returns a list of all news for current user or <code>nil</code> if news does not exist.</p>
+
+<h2>
+<a id="create-column-types" class="anchor" href="#create-column-types" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create column types</h2>
+
+<p>We can create a field type for every table. Try to create EmailField type:</p>
+
+<div class="highlight highlight-lua"><pre>fields.<span class="pl-smi">EmailField</span> <span class="pl-k">=</span> fields:<span class="pl-c1">register</span>({
+    __type__ <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>varchar<span class="pl-pds">"</span></span>,
+    settings <span class="pl-k">=</span> {
+        max_length <span class="pl-k">=</span> <span class="pl-c1">100</span>
+    },
+    validator <span class="pl-k">=</span> <span class="pl-k">function</span> (value)
+        <span class="pl-k">return</span> value:<span class="pl-c1">match</span>(<span class="pl-s"><span class="pl-pds">"</span>[A-Za-z0-9%.%%%+%-]+@[A-Za-z0-9%.%%%+%-]+%.%w%w%w?%w?<span class="pl-pds">"</span></span>)
+    <span class="pl-k">end</span>,
+    to_type <span class="pl-k">=</span> <span class="pl-k">function</span> (value)
+        <span class="pl-k">return</span> value
+    <span class="pl-k">end</span>,
+    as <span class="pl-k">=</span> <span class="pl-k">function</span> (value)
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>'<span class="pl-pds">"</span></span> <span class="pl-k">..</span> value <span class="pl-k">..</span> <span class="pl-s"><span class="pl-pds">"</span>'<span class="pl-pds">"</span></span>
+    <span class="pl-k">end</span>
+})</pre></div>
+
+<p>Let's make it step by step:</p>
+
+<p><code>__type__</code> - this variable creates the appropriate type in the database (<code>"varchar"</code>, <code>"integer"</code>, <code>"boolean"</code>, <code>"date"</code>, <code>"datetime"</code>, <code>"text"</code>, ...).
+By default this value is <code>"varchar"</code>.</p>
+
+<p><code>settings</code> -set a field value as default (<em>fields settings was describe later</em>). By default this value is empty.</p>
+
+<p><code>validator</code> - validates the value of the variable. If value is correct - returns <code>true</code>. If value is not correct it returns <code>false</code> and doesn't update or add rows. By default it always returns <code>true</code>.</p>
+
+<p><code>to_type</code> - parses value for correct sql save. By default it is not parsed value</p>
+
+<p><code>as</code> - returns the value from lua to SQL. By default it is not parsed value.</p>
+
+<div class="highlight highlight-lua"><pre><span class="pl-k">local</span> UserEmails <span class="pl-k">=</span> <span class="pl-c1">Table</span>({
+    __tablename__ <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>user_emails<span class="pl-pds">"</span></span>,
+    email <span class="pl-k">=</span> fields.<span class="pl-c1">EmailField</span>(),
+    user_id <span class="pl-k">=</span> fields.<span class="pl-c1">ForeignKey</span>()
+})
+
+<span class="pl-k">local</span> user_email <span class="pl-k">=</span> <span class="pl-c1">UserEmails</span>({
+    email <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>mailexample.com<span class="pl-pds">"</span></span>,
+    user_id <span class="pl-k">=</span> user.<span class="pl-smi">id</span>
+})
+user_email:<span class="pl-c1">save</span>()
+<span class="pl-c">-- Not save!</span>
+
+<span class="pl-c">-- And try again</span>
+<span class="pl-k">local</span> user_email <span class="pl-k">=</span> <span class="pl-c1">UserEmails</span>({
+    email <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>mail@example.com<span class="pl-pds">"</span></span>,
+    user_id <span class="pl-k">=</span> user.<span class="pl-smi">id</span>
+})
+user_email:<span class="pl-c1">save</span>()
+<span class="pl-c">-- This email added!</span>
+
+user_email.<span class="pl-smi">email</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>not email<span class="pl-pds">"</span></span>
+user_email:<span class="pl-c1">save</span>()
+<span class="pl-c">-- Not update</span>
+
+user_email.<span class="pl-smi">email</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>valid@email.com<span class="pl-pds">"</span></span>
+user_email:<span class="pl-c1">save</span>()
+<span class="pl-c">-- Update!</span></pre></div>
+
+<h2>
+<a id="final" class="anchor" href="#final" aria-hidden="true"><span class="octicon octicon-link"></span></a>Final</h2>
+
+<p>All code you can see in example.lua file. Feel free to use it! Good luck!</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/itdxer/4DaysORM">4DaysORM</a> is maintained by <a href="https://github.com/itdxer">itdxer</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
