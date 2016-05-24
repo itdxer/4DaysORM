@@ -533,7 +533,7 @@ local Select = function(own_table)
                         i=i+1
                     else
                         BACKTRACE(WARNING, "Can't update value for column `" ..
-                                            Type.to.str(colname) .. "`" .. new_value)
+                                            Type.to.str(colname) .. "`")
                     end
                 end
 
