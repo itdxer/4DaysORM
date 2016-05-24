@@ -519,6 +519,8 @@ local Select = function(own_table)
                 local _update = "UPDATE `" .. self.own_table.__tablename__ .. "`"
                 local _set = ""
                 local coltype
+                local _set_tbl = {}
+                local i=1
 
                 for colname, new_value in pairs(data) do
                     coltype = self.own_table:get_column(colname)
@@ -526,9 +528,12 @@ local Select = function(own_table)
                     if coltype and coltype.field.validator(new_value) then
                         _set = _set .. " `" .. colname .. "` = " ..
                               coltype.field.as(new_value)
+                        _set_tbl[i] = " `" .. colname .. "` = " ..
+                                coltype.field.as(new_value)
+                        i=i+1
                     else
                         BACKTRACE(WARNING, "Can't update value for column `" ..
-                                            Type.to.str(colname) .. "`")
+                                            Type.to.str(colname) .. "`" .. new_value)
                     end
                 end
 
@@ -540,7 +545,12 @@ local Select = function(own_table)
                 end
 
                 if _set ~= "" then
-                    _update = _update .. " SET " .. _set .. " " .. _where
+                    if #_set_tbl<2 then
+                        _update = _update .. " SET " .. _set .. " " .. _where
+                    else
+                        _update = _update .. " SET " .. table.concat(_set_tbl,",") .. " " .. _where
+                    end
+
                     db:execute(_update)
                 else
                     BACKTRACE(WARNING, "No table columns for update")
