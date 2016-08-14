@@ -26,7 +26,7 @@ POSTGRESQL = "postgresql"
 ------------------------------------------------------------------------------
 
 if not DB then
-    BACKTRACE(INFO, "Cna't find global database settings variable 'DB'")
+    print("[SQL:Startup] Can't find global database settings variable 'DB'. Creating empty one.")
     DB = {}
 end
 
