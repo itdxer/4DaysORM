@@ -51,18 +51,18 @@ local sql, _connect
 
 -- Get database by settings
 if DB.type == SQLITE then
-    require("luasql.sqlite3")
+    local luasql = require("luasql.sqlite3")
     sql = luasql.sqlite3()
     _connect = sql:connect(DB.name)
 
 elseif DB.type == MYSQL then
-    require("luasql.mysql")
+    local luasql = require("luasql.mysql")
     sql = luasql.mysql()
     print(DB.name, DB.username, DB.password, DB.host, DB.port)
     _connect = sql:connect(DB.name, DB.username, DB.password, DB.host, DB.port)
 
 elseif DB.type == POSTGRESQL then
-    require("luasql.postgres")
+    local luasql = require("luasql.postgres")
     sql = luasql.postgres()
     print(DB.name, DB.username, DB.password, DB.host, DB.port)
     _connect = sql:connect(DB.name, DB.username, DB.password, DB.host, DB.port)
