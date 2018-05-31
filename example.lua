@@ -191,7 +191,7 @@ fields.EmailField = fields:register({
 local UserEmails = Table({
     __tablename__ = "user_emails",
     email = fields.EmailField(),
-    user_id = fields.ForeignKey()
+    user_id = fields.ForeignKey({ to = User })
 })
 
 local user_email = UserEmails({
