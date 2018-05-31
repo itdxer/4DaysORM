@@ -100,7 +100,15 @@ local Field = {
                 }
 
                 -- Set Default settings
-                new_self.settings = new_self.field.settings
+
+                --
+                -- The content of the settings table must be copied because trying to copy a table
+                -- directly will result in a reference to the original table, thus all
+                -- instances of the same field type would have the same settings table.
+                --
+                for index, setting in pairs(new_self.field.settings) do
+                  new_self.settings[index] = setting
+                end
 
                 -- Set settings for column
                 if args.max_length then
