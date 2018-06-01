@@ -399,36 +399,28 @@ By default this value is `"varchar"`.
 local UserEmails = Table({
     __tablename__ = "user_emails",
     email = fields.EmailField(),
-    user_id = fields.ForeignKey()
+    user_id = fields.ForeignKey({ to = User })
 })
 
 local user_email = UserEmails({
     email = "mailexample.com",
     user_id = user.id
 })
-user_email:save()
--- Not save!
+user_email:save() -- This email wasn't added!
 
 -- And try again
 local user_email = UserEmails({
     email = "mail@example.com",
     user_id = user.id
 })
-user_email:save()
--- This email added!
+user_email:save() -- This email was added!
     
 user_email.email = "not email"
-user_email:save()
--- Not update
+user_email:save() -- This email wasn't updated
     
 user_email.email = "valid@email.com"
-user_email:save()
--- Update!
+user_email:save() -- This email was updated
 ```
-
-## Corona SDK support ##
-
-Will be implemented ...
 
 ## Final ##
 
