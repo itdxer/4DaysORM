@@ -411,31 +411,27 @@ By default this value is <code>"varchar"</code>.</p>
 <div class="highlight highlight-lua"><pre><span class="pl-k">local</span> UserEmails <span class="pl-k">=</span> <span class="pl-c1">Table</span>({
     __tablename__ <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>user_emails<span class="pl-pds">"</span></span>,
     email <span class="pl-k">=</span> fields.<span class="pl-c1">EmailField</span>(),
-    user_id <span class="pl-k">=</span> fields.<span class="pl-c1">ForeignKey</span>()
+    user_id <span class="pl-k">=</span> fields.<span class="pl-c1">ForeignKey</span>({to <span class="pl-k">=</span> User})
 })
 
 <span class="pl-k">local</span> user_email <span class="pl-k">=</span> <span class="pl-c1">UserEmails</span>({
     email <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>mailexample.com<span class="pl-pds">"</span></span>,
     user_id <span class="pl-k">=</span> user.<span class="pl-smi">id</span>
 })
-user_email:<span class="pl-c1">save</span>()
-<span class="pl-c">-- Not save!</span>
+user_email:<span class="pl-c1">save</span>() <span class="pl-c">-- This email wasn't added</span>
 
 <span class="pl-c">-- And try again</span>
 <span class="pl-k">local</span> user_email <span class="pl-k">=</span> <span class="pl-c1">UserEmails</span>({
     email <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>mail@example.com<span class="pl-pds">"</span></span>,
     user_id <span class="pl-k">=</span> user.<span class="pl-smi">id</span>
 })
-user_email:<span class="pl-c1">save</span>()
-<span class="pl-c">-- This email added!</span>
+user_email:<span class="pl-c1">save</span>() <span class="pl-c">-- This email was added</span>
 
 user_email.<span class="pl-smi">email</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>not email<span class="pl-pds">"</span></span>
-user_email:<span class="pl-c1">save</span>()
-<span class="pl-c">-- Not update</span>
+user_email:<span class="pl-c1">save</span>()<span class="pl-c">-- This email wasn't updated</span>
 
 user_email.<span class="pl-smi">email</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>valid@email.com<span class="pl-pds">"</span></span>
-user_email:<span class="pl-c1">save</span>()
-<span class="pl-c">-- Update!</span></pre></div>
+user_email:<span class="pl-c1">save</span>() <span class="pl-c">-- This email was updated</span></pre></div>
 
 <h2>
 <a id="final" class="anchor" href="#final" aria-hidden="true"><span class="octicon octicon-link"></span></a>Final</h2>
