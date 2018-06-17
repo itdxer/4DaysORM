@@ -116,7 +116,7 @@ local Field = {
                     new_self.settings.max_length = args.max_length
                 end
 
-                if args.null then
+                if args.null ~= nil then
                     new_self.settings.null = args.null
                 end
 
