@@ -18,7 +18,7 @@ DB = {}
 
 1. `type` - by default `"sqlite3"`. Also it can be:
     - `"mysql"` - for MySQL database
-    - `"postgres"` - for PostgreSQL database (*implemented soon*)
+    - `"postgresql"` - for PostgreSQL database (*implemented soon*)
 2. `name` - this is a path to database file for `"sqlite3"`. For other databases this value contains database name. (*by default `"database.db"`*)
 3. `username` - database user name (*by default `nil`*)
 4. `password` - database password (*by default `nil`*)

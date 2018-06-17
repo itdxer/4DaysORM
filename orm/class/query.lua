@@ -173,6 +173,9 @@ function Query(own_table, data)
           if coltype.settings.escape_value and (fieldtype:find("text") or fieldtype:find("char")) then
 
             if (DB.type == "sqlite3" or DB.type == "mysql" or DB.type == "postgres") then
+              
+              -- See https://keplerproject.github.io/luasql/manual.html for a list of
+              -- database drivers that support this method
               colvalue = db.connect:escape(colvalue)
             elseif (DB.type == "oracle") then
               BACKTRACE(WARNING, "Can't autoescape values for oracle databases (Tried to escape field `" .. colname .. "`)");
