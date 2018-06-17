@@ -68,12 +68,13 @@ local Field = {
                     settings = {
                         default = nil,
                         null = false,
-                        unique = false, 
+                        unique = false,
                         max_length = nil,
-                        primary_key = false
+                        primary_key = false,
+                        escape_value = false
                     },
 
-                    -- Return string for colmn type create
+                    -- Return string for column type create
                     _create_type = function (this)
                         local _type = this.field.__type__
 
@@ -121,6 +122,10 @@ local Field = {
 
                 if new_self.settings.foreign_key and args.to then
                     new_self.settings.to = args.to
+                end
+
+                if args.escape_value then
+                  new_self.settings.escape_value = true
                 end
 
                 return new_self
