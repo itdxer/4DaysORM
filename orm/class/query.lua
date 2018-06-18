@@ -93,7 +93,7 @@ function Query(own_table, data)
                         value = self[colname]
 
                         if table_column.field.validator(value) then
-                            value = self:_escapeValue(colname, value)
+                            value = _G.escapeValue(self.own_table, colname, value)
                             value = table_column.field.as(value)
                         else
                             BACKTRACE(WARNING, "Wrong type for table '" ..
@@ -145,7 +145,7 @@ function Query(own_table, data)
 
                     if coltype and coltype.field.validator(colinfo.new) then
 
-                        local colvalue = self:_escapeValue(colname, colinfo.new)
+                        local colvalue = _G.escapeValue(self.own_table, colname, colinfo.new)
                         set = " `" .. colname .. "` = " .. coltype.field.as(colvalue)
 
                         table.insert(equation_for_set, set)
@@ -162,29 +162,6 @@ function Query(own_table, data)
                 update = update .. " SET " .. set .. "\n\t    WHERE `" .. ID .. "` = " .. self.id
                 db:execute(update)
             end
-        end,
-
-        -- Escape text values to prevent sql injection
-        _escapeValue = function (self, colname, colvalue)
-
-          local coltype = self.own_table:get_column(colname)
-          local fieldtype = coltype.field.__type__
-
-          if coltype.settings.escape_value and (fieldtype:find("text") or fieldtype:find("char")) then
-
-            if (DB.type == "sqlite3" or DB.type == "mysql" or DB.type == "postgres") then
-              
-              -- See https://keplerproject.github.io/luasql/manual.html for a list of
-              -- database drivers that support this method
-              colvalue = db.connect:escape(colvalue)
-            elseif (DB.type == "oracle") then
-              BACKTRACE(WARNING, "Can't autoescape values for oracle databases (Tried to escape field `" .. colname .. "`)");
-            end
-
-          end
-
-          return colvalue;
-
         end,
 
         ------------------------------------------------
