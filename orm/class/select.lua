@@ -65,29 +65,8 @@ local Select = function(own_table)
             local rule
             local _in
 
-            value = _G.escapeValue(self.own_table, colname, value)
-
-            if colname:endswith(LESS_THEN) and Type.is.number(value) then
-                colname = string.cutend(colname, LESS_THEN)
-                table_column = self.own_table:get_column(colname)
-                result =  " < " .. table_column.field.as(value)
-
-            elseif colname:endswith(MORE_THEN) and Type.is.number(value) then
-                colname = string.cutend(colname, MORE_THEN)
-                table_column = self.own_table:get_column(colname)
-                result = " > " .. table_column.field.as(value)
-
-            elseif colname:endswith(EQ_OR_LESS_THEN) and Type.is.number(value) then
-                colname = string.cutend(colname, EQ_OR_LESS_THEN)
-                table_column = self.own_table:get_column(colname)
-                result = " <= " .. table_column.field.as(value)
-
-            elseif colname:endswith(EQ_OR_MORE_THEN) and Type.is.number(value) then
-                colname = string.cutend(colname, EQ_OR_MORE_THEN)
-                table_column = self.own_table:get_column(colname)
-                result = " >= " .. table_column.field.as(value)
-
-            elseif colname:endswith(IS_NULL) then
+            -- Special conditions that need no value escaping
+            if colname:endswith(IS_NULL) then
                 colname = string.cutend(colname, IS_NULL)
 
                 if value then
@@ -101,7 +80,7 @@ local Select = function(own_table)
 
                 if type(value) == "table" and table.getn(value) > 0 then
                     colname = string.cutend(colname, rule)
-                table_column = self.own_table:get_column(colname)
+                    table_column = self.own_table:get_column(colname)
                     _in = {}
 
                     for counter, val in pairs(value) do
@@ -113,11 +92,38 @@ local Select = function(own_table)
                     elseif rule == NOT_IN then
                         result = " NOT IN (" .. table.join(_in) .. ")"
                     end
+
                 end
 
             else
+
+                -- Conditions that need value escaping when it's enabled
+                local conditionPrepend = ""
+
+                if colname:endswith(LESS_THEN) and Type.is.number(value) then
+                    colname = string.cutend(colname, LESS_THEN)
+                    conditionPrepend = " < "
+
+                elseif colname:endswith(MORE_THEN) and Type.is.number(value) then
+                    colname = string.cutend(colname, MORE_THEN)
+                    conditionPrepend = " > "
+
+                elseif colname:endswith(EQ_OR_LESS_THEN) and Type.is.number(value) then
+                    colname = string.cutend(colname, EQ_OR_LESS_THEN)
+                    conditionPrepend = " <= "
+
+                elseif colname:endswith(EQ_OR_MORE_THEN) and Type.is.number(value) then
+                    colname = string.cutend(colname, EQ_OR_MORE_THEN)
+                    conditionPrepend = " >= "
+
+                else
+                    conditionPrepend = " = "
+                end
+
+                value = _G.escapeValue(self.own_table, colname, value)
                 table_column = self.own_table:get_column(colname)
-                result = " = " .. table_column.field.as(value)
+                result = conditionPrepend .. table_column.field.as(value)
+
             end
 
             if self.own_table:has_column(colname) then
