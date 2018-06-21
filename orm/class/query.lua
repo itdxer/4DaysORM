@@ -93,6 +93,7 @@ function Query(own_table, data)
                         value = self[colname]
 
                         if table_column.field.validator(value) then
+                            value = _G.escapeValue(self.own_table, colname, value)
                             value = table_column.field.as(value)
                         else
                             BACKTRACE(WARNING, "Wrong type for table '" ..
@@ -143,8 +144,9 @@ function Query(own_table, data)
                     coltype = self.own_table:get_column(colname)
 
                     if coltype and coltype.field.validator(colinfo.new) then
-                        set = " `" .. colname .. "` = " ..
-                              coltype.field.as(colinfo.new)
+
+                        local colvalue = _G.escapeValue(self.own_table, colname, colinfo.new)
+                        set = " `" .. colname .. "` = " .. coltype.field.as(colvalue)
 
                         table.insert(equation_for_set, set)
                     else
