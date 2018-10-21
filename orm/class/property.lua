@@ -8,7 +8,7 @@ local function Property(args)
             -- Asc column name
             colname = colname,
 
-            -- concatinate methods
+            -- concatenate methods
             __concat = function (left_part, right_part)
                 return tostring(left_part) .. tostring(right_part)
             end,

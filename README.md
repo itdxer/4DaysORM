@@ -61,6 +61,7 @@ Also you can add different settings to your table fields
 3. `null` - can be `true` or `false`. If value is `true` then value in table will be saved as `NULL`.
 4. `default` - if you didn't add any value to this field - it is going to be saved as default value.
 5. `primary_key` - If you want to add some value as `primary key`, you can set this value as `true`.
+6. `escape_value` - If this value is `true` and the column type is a string type special characters will be escaped to prevent sql injection
 
 ## Types of table fields ##
 

@@ -22,7 +22,7 @@ Table = {
 -- This method create new table
 -------------------------------------------
 -- @table_instance {table} class Table instance
--- 
+--
 -- @table_instance.__tablename__ {string} table name
 -- @table_instance.__colnames {table} list of column instances
 -- @table_instance.__foreign_keys {table} list of foreign key
@@ -79,7 +79,7 @@ function Table.new(self, args)
 
     local Table_instance = {
         ------------------------------------------------
-        --             Table info varibles            --
+        --            Table info variables            --
         ------------------------------------------------
 
         -- SQL table name
@@ -195,7 +195,7 @@ function Table.new(self, args)
 
     _G.All_Tables[self.__tablename__] = Table_instance
 
-    -- Create ne table if need
+    -- Create new table if needed
     if DB.new then
         self:create_table(Table_instance)
     end

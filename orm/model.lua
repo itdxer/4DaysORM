@@ -40,7 +40,7 @@ DB = {
     -- if you use sqlite set database path value
     -- if not set a database name
     name = DB.name or "database.db",
-    -- not sqllite db settings
+    -- not sqlite db settings
     host = DB.host or nil,
     port = DB.port or nil,
     username = DB.username or nil,
@@ -91,7 +91,7 @@ end
 
 -- Database settings
 db = {
-    -- Satabase connect instance
+    -- Database connect instance
     connect = _connect,
 
     -- Execute SQL query

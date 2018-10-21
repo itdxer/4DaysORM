@@ -46,7 +46,7 @@ function _G.escapeValue(own_table, colname, colvalue)
     local fieldtype = coltype.field.__type__
     if fieldtype:find("text") or fieldtype:find("char") then
 
-      if (DB.type == "sqlite3" or DB.type == "mysql" or DB.type == "postgres") then
+      if (DB.type == "sqlite3" or DB.type == "mysql" or DB.type == "postgresql") then
 
         -- See https://keplerproject.github.io/luasql/manual.html for a list of
         -- database drivers that support this method

@@ -16,6 +16,12 @@ end
 
 local field = {}
 
+-- The "Field" class will be used to search a table index that the "field" class doesn't have.
+-- This way field:register() will call the same function like Field:register() and the register
+-- function has access to the default values for the field configuration.
+setmetatable(field, {__index = Field});
+
+
 field.PrimaryField = Field:register({
     __type__ = "integer",
     validator = Type.is.int,
@@ -58,7 +64,7 @@ field.DateTimeField = Field:register({
         end
     end,
     as = function (value)
-        return Type.is.int(value) and value or os.time(value) 
+        return Type.is.int(value) and value or os.time(value)
     end,
     to_type = function (value)
         return os.date("*t", Type.to.number(value))
@@ -73,7 +79,5 @@ field.ForeignKey = Field:register({
     },
     to_type = Type.to.number
 })
-
-field.register = Field.register
 
 return field
