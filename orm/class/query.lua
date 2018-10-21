@@ -38,7 +38,7 @@ function Query(own_table, data)
         -- Get column value
         -----------------------------------------
         -- @colname {string} column name in table
-        -- 
+        --
         -- @return {string|boolean|number|nil} column value
         -----------------------------------------
         _get_col = function (self, colname)
@@ -112,7 +112,7 @@ function Query(own_table, data)
 
                     colname = "`" .. colname .. "`"
 
-                    -- TODO: save in corectly type
+                    -- TODO: save in correct type
                     if counter ~= 0 then
                         colname = ", " .. colname
                         value = ", " .. value

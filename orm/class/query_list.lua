@@ -47,7 +47,7 @@ function QueryList(own_table, rows)
         ------------------------------------------------
         -- @id {integer} table data row identifier
         --
-        -- @return {teble/nil} get Query instance or nil if
+        -- @return {table/nil} get Query instance or nil if
         -- instance is not exists
         ------------------------------------------------
         with_id = function (self, id)

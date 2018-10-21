@@ -191,7 +191,7 @@ local Select = function(own_table)
             end
         end,
 
-        -- BUild join tables rules
+        -- Build join tables rules
         _build_join = function (self)
             local result_join = ""
             local unique_tables = {}
@@ -251,11 +251,11 @@ local Select = function(own_table)
             return result_join
         end,
 
-        -- String with includin data in select
+        -- String with including data in select
         --------------------------------------------
-        -- @own_table {table|nill} Table instance
+        -- @own_table {table|nil} Table instance
         --
-        -- @return {string} comma separeted fields
+        -- @return {string} comma separated fields
         --------------------------------------------
         _build_including = function (self, own_table)
             local include = {}
@@ -265,7 +265,7 @@ local Select = function(own_table)
                 own_table = self.own_table
             end
 
-            -- get current column 
+            -- get current column
             for _, column in pairs(own_table.__colnames) do
                 colname, colname_as = own_table:column(column.name)
                 table.insert(include, colname .. " AS " .. colname_as)
@@ -292,19 +292,19 @@ local Select = function(own_table)
 
             -- Add join rules
             if table.getn(self._rules.columns.join) > 0 then
-                local unique_tables = {}
+                local unique_tables = { self.own_table }
                 local join_tables = {}
                 local left_table, right_table
 
                 for _, values in pairs(self._rules.columns.join) do
                     left_table = values[1]
                     right_table = values[2]
-                  
+
                     if not table.has_value(unique_tables, left_table) then
                         table.insert(unique_tables, left_table)
                         _select = _select .. ", " .. self:_build_including(left_table)
                     end
-                  
+
                     if not table.has_value(unique_tables, right_table) then
                         table.insert(unique_tables, right_table)
                         _select = _select .. ", " .. self:_build_including(right_table)
@@ -314,7 +314,7 @@ local Select = function(own_table)
                 join = self:_build_join()
             end
 
-            -- Check agregators in select
+            -- Check aggregators in select
             if table.getn(self._rules.columns.include) > 0 then
                 local aggregators = {}
                 local aggregator, as
@@ -590,7 +590,7 @@ local Select = function(own_table)
         --------------------------------------------------------
 
         -- Return one value
-        first = function (self) 
+        first = function (self)
             self._rules.limit = 1
             local data = self:all()
 
