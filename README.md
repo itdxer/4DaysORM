@@ -53,6 +53,7 @@ local User = Table({
 For every table is created a column `id` with `PRIMARY KEY` field by default.
 
 `__tablename__` is required value which should contain the name of the table.
+`__columnCreateOrder__` is optional and can be used to define the order in which the columns will be created in the database table (the value must be a table of column names)
 
 Also you can add different settings to your table fields
 

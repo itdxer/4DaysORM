@@ -77,6 +77,32 @@ function Table.new(self, args)
     self.__tablename__ = args.__tablename__
     args.__tablename__ = nil
 
+    -- Determine the column creation order
+    -- This is necessary because tables in lua have no order
+    self.__columnCreateOrder__ = { "id" };
+
+    local customColumnCreateOrder = args.__columnCreateOrder__;
+    args.__columnCreateOrder__ = nil;
+
+    if (customColumnCreateOrder) then
+      for _, colname in ipairs(customColumnCreateOrder) do
+
+        -- Add only existing columns to the column create order
+        if (args[colname]) then
+          table.insert(self.__columnCreateOrder__, colname);
+        end
+      end
+    end
+
+    for colname, coltype in pairs(args) do
+
+      -- Add the columns that are defined but missing from the column create order
+      if (not table.has_value(self.__columnCreateOrder__, colname)) then
+        table.insert(self.__columnCreateOrder__, colname);
+      end
+    end
+
+
     local Table_instance = {
         ------------------------------------------------
         --            Table info variables            --
@@ -177,7 +203,9 @@ function Table.new(self, args)
     args.id = fields.PrimaryField({auto_increment = true})
 
     -- copy column arguments to new table instance
-    for colname, coltype in pairs(args) do
+    for _, colname in ipairs(self.__columnCreateOrder__) do
+
+        local coltype = args[colname];
         coltype.name = colname
         coltype.__table__ = Table_instance
 
