@@ -113,7 +113,7 @@ function orderedNext(t, state)
     end
     -- fetch the next value
     key = nil
-    for i = 1,table.getn(t.__orderedIndex) do
+    for i = 1,#t.__orderedIndex do
         if t.__orderedIndex[i] == state then
             key = t.__orderedIndex[i+1]
         end
@@ -178,7 +178,7 @@ UnitResult = { -- class
     end
 
     function UnitResult:displayFailedTests()
-        if table.getn( self.errorList ) == 0 then return end
+        if #self.errorList == 0 then return end
         print("Failed tests:")
         print("-------------")
         table.foreachi( self.errorList, self.displayOneFailedTest )
@@ -260,7 +260,7 @@ LuaUnit = {
     function LuaUnit.strip_luaunit_stack(stack_trace)
         stack_list = LuaUnit.strsplit( "\n", stack_trace )
         strip_end = nil
-        for i = table.getn(stack_list),1,-1 do
+        for i = #stack_list,1,-1 do
             -- a bit rude but it works !
             if string.find(stack_list[i],"[C]: in function `xpcall'",0,true)
                 then

@@ -69,7 +69,7 @@ function QueryList(own_table, rows)
 
         -- Get count of values in stack
         count = function (self)
-            return table.getn(self._stack)
+            return #self._stack
         end,
 
         -- Remove from database all elements from stack
