@@ -78,7 +78,7 @@ local Select = function(own_table)
             elseif colname:endswith(IN) or colname:endswith(NOT_IN) then
                 rule = colname:endswith(IN) and IN or NOT_IN
 
-                if type(value) == "table" and table.getn(value) > 0 then
+                if type(value) == "table" and #value > 0 then
                     colname = string.cutend(colname, rule)
                     table_column = self.own_table:get_column(colname)
                     _in = {}
@@ -291,7 +291,7 @@ local Select = function(own_table)
             _select = "SELECT " .. including
 
             -- Add join rules
-            if table.getn(self._rules.columns.join) > 0 then
+            if #self._rules.columns.join > 0 then
                 local unique_tables = { self.own_table }
                 local join_tables = {}
                 local left_table, right_table
@@ -315,7 +315,7 @@ local Select = function(own_table)
             end
 
             -- Check aggregators in select
-            if table.getn(self._rules.columns.include) > 0 then
+            if #self._rules.columns.include > 0 then
                 local aggregators = {}
                 local aggregator, as
 
@@ -341,7 +341,7 @@ local Select = function(own_table)
             end
 
             -- Build GROUP BY
-            if table.getn(self._rules.group) > 0 then
+            if #self._rules.group > 0 then
                 rule = self:_update_col_names(self._rules.group)
                 rule = table.join(rule)
                 _select = _select .. " \nGROUP BY " .. rule
@@ -354,7 +354,7 @@ local Select = function(own_table)
             end
 
             -- Build ORDER BY
-            if table.getn(self._rules.order) > 0 then
+            if #self._rules.order > 0 then
                 rule = self:_update_col_names(self._rules.order)
                 rule = table.join(rule)
                 _select = _select .. " \nORDER BY " .. rule
